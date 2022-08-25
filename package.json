@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "start": "npx nodemon server/server.js"
+    "start": "npx nodemon server/server.js",
+    "connectdb": "nodemon db/schema.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,8 @@
     "eslint": "^8.21.0",
     "express": "^4.18.1",
     "jest": "^28.1.3",
+    "mongoose": "^6.5.1",
+    "pg": "^8.8.0",
     "supertest": "^6.2.4"
   }
 }
