@@ -55,7 +55,7 @@ app.get('/products/:id/related', (req, res) => {
 
 
 
-var port = 3000;
+var port = 8080;
 app.listen(port, () => {
   console.log('Listening on port: ', port);
 });

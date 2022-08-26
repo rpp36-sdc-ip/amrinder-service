@@ -61,5 +61,11 @@ copy photos from '/Users/amrindersingh/Downloads/photos.csv' delimiter ',' csv h
 copy skus from '/Users/amrindersingh/Downloads/skus.csv' delimiter ',' csv header;
 copy related from '/Users/amrindersingh/Downloads/related.csv' delimiter ',' csv header;
 
+create index features_product_id on features(product_id);
+create index styles_product_id on styles(product_id);
+create index photos_style_id on photos(style_id);
+create index skus_style_id on skus(style_id);
+create index related_product_id on related(product_id);
+
 -- mysql -u root < db/schema.sql (NEED TO FIND POSTGRESQL COMMAND)
--- i /Users/amrindersingh/hrrpp36/SDC/amrinder-service/db/schema.sql (<--PATH OF FILE)
+-- \i /Users/amrindersingh/hrrpp36/SDC/amrinder-service/db/schema.sql (<--PATH OF FILE)

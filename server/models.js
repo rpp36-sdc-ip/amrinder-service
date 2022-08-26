@@ -94,10 +94,10 @@ module.exports = {
       //   GROUP BY styles.id;`;
 
       var query = `
-      SELECT styles.id, styles.name, styles.original_price, styles.sale_price, styles.default_style AS "default?",
+      SELECT styles.id as style_id, styles.name, styles.original_price, styles.sale_price, styles.default_style AS "default?",
       (SELECT json_agg(photos_url)
       FROM (
-        SELECT thumbnail_url, url
+        SELECT photos.thumbnail_url, photos.url
         FROM photos
         WHERE photos.style_id=styles.id
         ) AS photos_url
@@ -106,8 +106,7 @@ module.exports = {
       FROM styles
       JOIN skus
       ON styles.id = skus.style_id and styles.product_id=${id}
-      GROUP BY styles.id
-      ;
+      GROUP BY styles.id;
       `
 
 
@@ -115,12 +114,76 @@ module.exports = {
         if (err) {
           callback(err);
         } else {
-          var data = {
-            product_id: id,
-            results: results.rows
-          }
+          if (results.rows.length > 0) {
+            var data = {
+              product_id: id,
+              results: results.rows
+            }
+            callback(null, data);
+          } else {
+            var query = `SELECT styles.id, styles.name, styles.original_price, styles.sale_price, styles.default_style AS "default?"
+             from styles where styles.product_id = ${id};`;
 
-          callback(null, data);
+             db.query(query, (err, results) => {
+              if (err) {
+                callback(err);
+              } else {
+
+                if (results.rows.length > 0) {
+                  var array = results.rows;
+
+                  for (var i = 0; i < array.length; i++) {
+                    array[i].photos = [
+                      {
+                          "thumbnail_url": null,
+                          "url": null
+                      }
+                    ]
+
+                    array[i].skus = {
+                      "null": {
+                        "quantity": null,
+                        "size": null
+                      }
+                    }
+                  }
+
+
+                  var data = {
+                    product_id: id,
+                    results: array
+                  }
+
+                  callback(null, data);
+                } else {
+                  var array = [];
+                  array.push({style_id: null,
+                  name: null,
+                  original_price: null,
+                  sale_price: null,
+                  "default?": false,
+                  photos: [
+                    {
+                        "thumbnail_url": null,
+                        "url": null
+                    }
+                  ],
+                  skus: {
+                    "null": {
+                      "quantity": null,
+                      "size": null
+                    }
+                  }
+                  })
+
+                  var data = {product_id: id,
+                  results: array}
+
+                  callback(null, data);
+                }
+              }
+             })
+          }
         }
       })
     }
